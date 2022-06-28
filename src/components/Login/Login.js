@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer } from 'react'
+import React, { useContext, useEffect, useReducer, useRef } from 'react'
 import AuthContext from '../../store/auth-context'
 import Card from '../UI/Card/Card'
 import classes from './Login.module.css'
@@ -61,8 +61,10 @@ const Login = props => {
     passwordValid: false,
     formValid: false
   })
-
+  console.log(formState)
   const context = useContext(AuthContext)
+  const emailInputRef = useRef()
+  const passwordInputRef = useRef()
 
   // Extracting a property from an object and assigning it an 'alias'
   const { emailValid: emailIsValid, passwordValid: passwordIsValid } = formState
@@ -97,13 +99,26 @@ const Login = props => {
 
   const submitHandler = event => {
     event.preventDefault()
-    context.onLogin(formState.emailValid, formState.passwordValid)
+    if (formState.formValid) {
+      console.log(formState, "here")
+      context.onLogin(formState.emailValue, formState.passwordValue)
+    } else {
+      console.log("here 2")
+      if (formState.emailValid === false) {
+        console.log("here 3")
+        emailInputRef.current.focus()
+      } else {
+        console.log("here 4")
+        passwordInputRef.current.focus()
+      }
+    }
   }
 
   return (
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
         <Input
+          ref={emailInputRef}
           id='email'
           label='E-Mail'
           type='email'
@@ -113,6 +128,7 @@ const Login = props => {
           value={formState.emailValue}
         />
         <Input
+          ref={passwordInputRef}
           id='password'
           label='Password'
           type='password'
@@ -122,11 +138,7 @@ const Login = props => {
           value={formState.passwordValue}
         />
         <div className={classes.actions}>
-          <Button
-            type='submit'
-            className={classes.btn}
-            disabled={!formState.formValid}
-          >
+          <Button type='submit' className={classes.btn}>
             Login
           </Button>
         </div>
