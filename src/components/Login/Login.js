@@ -1,8 +1,9 @@
-import React, { useEffect, useReducer } from 'react'
-
+import React, { useContext, useEffect, useReducer } from 'react'
+import AuthContext from '../../store/auth-context'
 import Card from '../UI/Card/Card'
 import classes from './Login.module.css'
 import Button from '../UI/Button/Button'
+import Input from '../UI/Input'
 
 // Can be created outside of the scope of the component function because none of the data inside Login Component will needed to be accessed, instead it will be passed in as arguments
 const formReducer = (state, action) => {
@@ -61,8 +62,10 @@ const Login = props => {
     formValid: false
   })
 
+  const context = useContext(AuthContext)
+
   // Extracting a property from an object and assigning it an 'alias'
-  const {emailValid: emailIsValid, passwordValid: passwordIsValid} = formState
+  const { emailValid: emailIsValid, passwordValid: passwordIsValid } = formState
 
   useEffect(() => {
     const identifier = setTimeout(() => {
@@ -94,41 +97,30 @@ const Login = props => {
 
   const submitHandler = event => {
     event.preventDefault()
-    props.onLogin(formState.emailValid, formState.passwordValid)
-    console.log(formState)
+    context.onLogin(formState.emailValid, formState.passwordValid)
   }
 
   return (
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
-        <div
-          className={`${classes.control} ${
-            formState.emailValid === false ? classes.invalid : ''
-          }`}
-        >
-          <label htmlFor='email'>E-Mail</label>
-          <input
-            type='email'
-            id='email'
-            value={formState.emailValue}
-            onChange={emailChangeHandler}
-            onBlur={validateEmailHandler}
-          />
-        </div>
-        <div
-          className={`${classes.control} ${
-            formState.passwordValid === false ? classes.invalid : ''
-          }`}
-        >
-          <label htmlFor='password'>Password</label>
-          <input
-            type='password'
-            id='password'
-            value={formState.passwordValue}
-            onChange={passwordChangeHandler}
-            onBlur={validatePasswordHandler}
-          />
-        </div>
+        <Input
+          id='email'
+          label='E-Mail'
+          type='email'
+          isValid={emailIsValid}
+          onChange={emailChangeHandler}
+          onBlue={validateEmailHandler}
+          value={formState.emailValue}
+        />
+        <Input
+          id='password'
+          label='Password'
+          type='password'
+          isValid={passwordIsValid}
+          onChange={passwordChangeHandler}
+          onBlue={validatePasswordHandler}
+          value={formState.passwordValue}
+        />
         <div className={classes.actions}>
           <Button
             type='submit'
